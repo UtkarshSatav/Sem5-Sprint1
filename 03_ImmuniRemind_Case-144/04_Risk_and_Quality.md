@@ -60,7 +60,7 @@ Highest initial exposure is R3 and R4 (16), then R1 and R2 (15). Scores must be 
 
 ## 4. Test quality and defect measures
 
-Measured DRE and defect density are in `05_Test_Plan_and_Evidence.md` §7.
+Simulated DRE and defect density are in `05_Test_Plan_and_Evidence.md` §7.
 
 ## 5. Quality gates
 
@@ -70,7 +70,7 @@ Measured DRE and defect density are in `05_Test_Plan_and_Evidence.md` §7.
 | Schedule generator verification | Versioned rule fixture, expected/actual date comparison, BVA and exception-path results | Rule owner and QA lead |
 | Security/privacy verification | Role and post-scope tests, audit/log review, TLS configuration review, remediation record | Security/privacy owner |
 | Integration verification | Success/failure/timeout/retry and duplicate-job evidence from test gateway or approved simulator | QA and integration owner |
-| Test exit / pilot go-no-go | No open unaccepted critical/high defect, DRE ≥ 90%, data reconciliation, training/support/rollback readiness, metric baseline and pilot guardrails | Sponsor, authority, QA, pilot coordinator |
-| Pilot close / scale decision | Reconciled five-post measures, deviations, residual risks, operating support and documented decision | Health authority and sponsor |
+| Test exit / pilot go-no-go | No open unaccepted critical/high defect, data reconciliation, training/support/rollback readiness, metric baseline and pilot guardrails | Sponsor, authority, QA, pilot coordinator |
+| Pilot close / scale decision | Reconciled five-post measures, DRE ≥ 90% after the 15-day post-release window, deviations, residual risks, operating support and documented decision | Health authority and sponsor |
 
-No gate is marked passed in this planning package. Evidence must be produced during implementation and testing.
+No gate is marked passed in this planning package. Evidence must be produced during implementation and testing. The simulated evidence in 03 §7, 05 §6–7 and 07 illustrates how each gate would be judged.

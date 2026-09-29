@@ -72,7 +72,7 @@ Four experiments are compared:
 
 Logistic regression is selected for the app because it has the strongest holdout balanced accuracy, recall, F1, and ROC AUC of the meaningful models that use the grades. On the 163-row holdout it produces 125 true negatives, 13 false positives, 4 false negatives, and 21 true positives.
 
-Its mean five-fold training-partition scores are 0.902 balanced accuracy, 0.636 precision, 0.907 recall, 0.742 F1, and 0.977 ROC AUC. Cross-validation and holdout results are both reported to avoid presenting a single split without context.
+Its mean five-fold validation-fold scores (training partition) are 0.902 balanced accuracy, 0.636 precision, 0.907 recall, 0.742 F1, and 0.977 ROC AUC. Cross-validation and holdout results are both reported to avoid presenting a single split without context.
 
 The early-warning model (no G1/G2) drops to holdout balanced accuracy 0.6439, recall 0.44 and ROC AUC 0.6907 (confusion matrix: 117 TN, 21 FP, 14 FN, 11 TP), with five-fold CV balanced accuracy 0.7526. It still beats the baseline, so non-grade signals carry some information, but it misses more than half of the priority cases. Most of the accuracy of the main model comes from G1/G2. Earlier grades are what make the tool useful, and without them it is weak.
 

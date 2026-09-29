@@ -16,7 +16,7 @@ Deliverable map: SRS = 01; UML package = 02; Project plan = 03; Estimation sheet
 
 ## Case facts used
 
-The case brief supplies 40 urban health posts, 36,000 children under age five, approximately 12 scheduled doses per child, a current missed-dose figure of about 23%, a target of 10% within one year, and task durations/dependencies documented in the schedule file. Derived volume: 36,000 × 12 ≈ 432,000 dose records. Any additional value used for sizing, service targets, sample data, or project dates is identified as an assumption or proposed acceptance target, not as a fact supplied by the case.
+The case brief supplies 40 urban health posts, 36,000 children under age five, approximately 12 scheduled doses per child, about 23% of children miss at least one scheduled vaccine (a child-level rate), a target of 10% within one year, and task durations/dependencies documented in the schedule file. Derived volume: 36,000 × 12 ≈ 432,000 dose records. Any additional value used for sizing, service targets, sample data, or project dates is identified as an assumption or proposed acceptance target, not as a fact supplied by the case.
 
 ## Scope boundary
 

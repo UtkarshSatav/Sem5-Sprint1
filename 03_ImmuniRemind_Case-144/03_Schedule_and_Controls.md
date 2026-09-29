@@ -123,15 +123,15 @@ At each weekly review (proposed cadence), the project lead records planned/actua
 | Schedule rule approval not available by day 10 | Stop due-date acceptance work; request decision/owner/date; replan D and downstream dates rather than use guessed rules | Health authority owns rule decision; sponsor accepts schedule impact |
 | Any unresolved critical/high defect at test exit | Block pilot go decision until fixed and retested, or document formal risk acceptance where legally and clinically permitted | QA lead recommends; authority/sponsor decides; signed test-exit record |
 | Data completeness or authorization pilot gate fails | Pause affected post/workflow, investigate and correct, revalidate synthetic and pilot records before resuming | Pilot coordinator and privacy/security owner approve restart |
-| Missed-dose metric worsens or exceeds agreed guardrail | Check denominators, data quality, workflow, and access first; adjust operations/reminders only with approved policy; consider pause | Authority reviews evidence and records continue/adjust/stop decision |
+| Children-missing-at-least-one-dose metric worsens or exceeds agreed guardrail | Check denominators, data quality, workflow, and access first; adjust operations/reminders only with approved policy; consider pause | Authority reviews evidence and records continue/adjust/stop decision |
 
 Thresholds above are proposed project controls, not supplied targets. Exact severity definitions, stop guardrails, baseline and measurement window are approval items before pilot.
 
-### 7.1 Actual vs plan
+### 7.1 Actual (tasks A–F) and forecast at the day-32 status (G, H — before corrective action)
 
-*Simulated for the case study: the actual durations below are invented to demonstrate variance analysis; they are not observed project data.*
+*Simulated for the case study: the actual durations below are invented to demonstrate variance analysis; they are not observed project data. Tasks A–F are actual; G and H are forecast at the day-32 status, before the corrective action in 7.3.*
 
-| Task | Planned dur | Actual dur | Variance (days) | Planned ES–EF | Actual ES–EF | On critical path? |
+| Task | Planned dur | Actual / forecast dur | Variance (days) | Planned ES–EF | Actual / forecast ES–EF | On critical path? |
 |---|---:|---:|---:|---|---|---|
 | A Requirements | 6 | 6 | 0 | 0–6 | 0–6 | Yes |
 | B Schedule rules | 4 | 5 | +1 | 6–10 | 6–11 | No (float 6 → 5) |
@@ -146,7 +146,7 @@ Thresholds above are proposed project controls, not supplied targets. Exact seve
 
 *Simulated for the case study.*
 
-1. Task variance = actual − planned duration: B = 5 − 4 = +1; C = 12 − 10 = +2; F = 8 − 7 = +1; all other tasks 0.
+1. Task variance = actual − planned duration (SV here is expressed in days late: positive = late; SV(t) uses the earned-schedule convention: negative = behind): B = 5 − 4 = +1; C = 12 − 10 = +2; F = 8 − 7 = +1; all other tasks 0.
 2. B is not critical. Its overrun is absorbed by its float, which falls from 6 to 5 days (B now finishes at day 11 against a late finish of 16). It does not move the finish date.
 3. C and F are on the critical path, so their overruns propagate: 2 + 1 = 3 days.
 4. Forecast finish = 51 + 3 = 54 days against a plan of 51.
@@ -171,6 +171,8 @@ Recovery = 2 + 1 = 3 days, so the forecast finish returns from 54 to 54 − 3 = 
 | Confirmed by: QA lead | Checks that the Testing exit criteria are unchanged after crashing and overlap |
 | Approved by: Project Sponsor (Municipal Health Officer), via the change control board | Approves the baseline change and the added resource; the decision and revised CPM are logged |
 
+Corrected dates: Testing (G) runs days 32–37 (5 days), and the 1 day of pilot training overlapped with its last day lets the Pilot (H) start at day 36 and run 15 days to day 51. P1 at day 36 is therefore the start of pilot training at the 5 posts; go-live follows once Testing exits at day 37, and the finish stays at 51.
+
 ### 7.4 Pilot metrics: plan vs actual
 
 *Simulated for the case study: pilot results are invented to demonstrate the scale rule.*
@@ -190,7 +192,7 @@ Before pilot, agree a baseline period, cohort inclusion, dose denominator, exclu
 
 | Measure | Definition to approve | Use |
 |---|---|---|
-| Missed-dose proportion | Children/doses meeting authority-defined missed-dose outcome divided by eligible cohort/dose denominator for a named period | Compare consistently with case baseline/target; do not claim causal effect from before/after alone |
+| Children missing at least one dose | Children in the eligible cohort with at least one authority-defined missed dose, divided by all children in the eligible cohort, for a named period | Compare consistently with case baseline/target; do not claim causal effect from before/after alone |
 | On-time completion | Due doses recorded within the authority-defined window divided by doses due in the same cohort and period | Assess timeliness and workflow |
 | Reminder process rate | Eligible reminders queued, gateway accepted, and delivery-confirmed, each divided by eligible reminder attempts | Separate system processing from confirmed delivery |
 | Record completeness | Records with required approved fields populated divided by records reviewed | Detect onboarding and data quality gaps |

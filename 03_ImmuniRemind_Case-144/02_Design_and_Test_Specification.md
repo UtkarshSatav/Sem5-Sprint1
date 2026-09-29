@@ -4,7 +4,7 @@ These models cover the requirements in [the SRS](01_SRS_and_Priorities.md). They
 
 ## 1. Use-case model
 
-Actors sit outside the system boundary. The «include» and «extend» relationships are drawn as labelled dashed edges. The four staff actors use Authenticate through an «include» from each staff use case.
+Actors sit outside the system boundary. The «include» and «extend» relationships are drawn as labelled dashed edges. The three staff actors (health worker, supervisor, medical officer) use Authenticate through an «include» from each staff use case.
 
 ```mermaid
 flowchart LR

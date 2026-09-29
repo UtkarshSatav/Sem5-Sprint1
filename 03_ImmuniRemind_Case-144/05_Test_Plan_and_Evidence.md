@@ -34,7 +34,7 @@ This document is the IEEE 829-lite test plan for ImmuniRemind, together with the
 | Level | Technique |
 |---|---|
 | Unit | Equivalence partitioning (§3), boundary value analysis by age in weeks (§4), decision table (§5) |
-| Integration | Schedule generator to reminder queue to SMS simulator (success, failure, timeout, retry, duplicate job) |
+| Integration | ReminderScheduler → ReminderQueue → ReminderService → SMS simulator (ScheduleGenerator only writes PlannedDose rows; see 02 §7) (success, failure, timeout, retry, duplicate job) |
 | System | End-to-end flows: register, generate schedule, record dose, list due/overdue, send reminders |
 | UAT | Five health-post workers run the task scripts on synthetic records |
 
@@ -45,11 +45,11 @@ This document is the IEEE 829-lite test plan for ImmuniRemind, together with the
 **1.7 Exit criteria**
 - 100% of planned cases are executed.
 - 0 open critical or high defects.
-- DRE target ≥ 90% (measured in §7).
+- DRE target ≥ 90%, confirmed at pilot close (P4) after the 15-day post-release window.
 
 **1.8 Test environment:** synthetic records only, no real child or guardian data. An SMS simulator replaces the gateway.
 
-**1.9 Schedule:** Task G (Testing) is planned for days 29–36. In the simulated actuals it ran on days 32–39 because Registration and Supervisor dashboard finished late.
+**1.9 Schedule:** Task G (Testing) is planned for days 29–36; forecast days 32–39 at the day-32 status because Registration and Supervisor dashboard finished late; after crashing to 5 days it ran on days 32–37, with 1 day of pilot training overlapped (see 03 §7.3).
 
 **1.10 Roles**
 
@@ -294,12 +294,12 @@ The 11 defects from requirements and design review were found by inspection, not
 | DEF-009 | Design review | Auth/common | High | Supervisor post-scope check missing from report service | Closed |
 | DEF-017 | Unit | Schedule generator | Critical | Penta-1 at exactly 10 weeks classed as Overdue (off-by-one at m+4) | Closed |
 | DEF-024 | Unit | Schedule generator | Medium | Age computed as days ÷ 7 rounded, not floored | Closed |
-| DEF-031 | Unit | Registration | Medium | Future date of birth accepted | Closed |
-| DEF-038 | Integration | SMS reminders | Critical | Retry created a duplicate reminder job | Closed |
-| DEF-046 | Integration | Registration | Low | Duplicate child not flagged for identity review | Closed |
-| DEF-052 | System | Supervisor dashboard | Low | Overdue count excluded children at exactly m+5 weeks | Closed |
-| DEF-058 | UAT | Registration | Low | Contact-number field label unclear to workers | Closed |
-| DEF-061 | Post-release | SMS reminders | High | SMS delivery-receipt timeout not retried | Fixed in pilot patch |
+| DEF-025 | Unit | Registration | Medium | Future date of birth accepted | Closed |
+| DEF-030 | Integration | SMS reminders | Critical | Retry created a duplicate reminder job | Closed |
+| DEF-033 | Integration | Registration | Low | Duplicate child not flagged for identity review | Closed |
+| DEF-038 | System | Supervisor dashboard | Low | Overdue count excluded children at exactly m+5 weeks | Closed |
+| DEF-044 | UAT | Registration | Low | Contact-number field label unclear to workers | Closed |
+| DEF-047 | Post-release | SMS reminders | High | SMS delivery-receipt timeout not retried | Fixed in pilot patch |
 
 **6.5 Module size and defects (module sizes assumed)**
 
@@ -333,6 +333,6 @@ The inputs come from the simulated log in §6.
 | Auth/common | 3 ÷ 1.0 | 3.0 |
 
 **Interpretation**
-- DRE of 93.75% (test-phase 91.9%) is at or above the 90% target, so the exit criterion is met.
+- DRE of 93.75% (test-phase 91.9%) is at or above the 90% target, so the DRE target is met at pilot close.
 - The schedule generator has the highest density (5.6), so it gets extra review before the 40-post rollout.
 - The figures depend on the length of the post-release window: a longer window would likely reveal more escaped defects and lower the DRE.
