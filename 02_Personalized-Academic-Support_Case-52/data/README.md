@@ -29,6 +29,13 @@ support_priority = 0 when G3 >= 10
 - No exact duplicate rows
 - 100 priority rows and 549 routine rows
 - The positive class is imbalanced at 15.4%
+- 15 rows have G3 = 0 (8 of them with G2 > 0). These look like students who left or missed the final assessment, so they are noisy positive labels; they are kept and flagged as a limitation.
+- Absences are right-skewed (skew 2.02); 8 rows exceed 20 and the maximum is 32.
+- G1 and G2 are strongly collinear (r = 0.865) and G2 correlates 0.919 with G3, so G1/G2 coefficients should not be read independently.
+- `studytime` and `traveltime` are ordinal bands (1–4), not hours, and are scaled as ordered numbers.
+- `student.txt` documents failures as `n if 1<=n<3, else 4`, but the maximum observed value is 3, so 3 is treated as "3 or more".
+- G1 and G2 are quoted strings in the raw CSV but parse cleanly as integers.
+- Priority rate differs by school: GP 7.6% (n = 423) vs MS 30.1% (n = 226).
 
 ## Exclusions
 

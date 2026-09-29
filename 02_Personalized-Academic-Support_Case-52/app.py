@@ -4,15 +4,16 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import joblib
 import pandas as pd
 import streamlit as st
 
 from src.modeling import (
     FEATURES,
+    MODEL_PATH,
     ROOT,
     TARGET,
     load_dataset,
-    make_logistic_model,
     support_recommendations,
 )
 
@@ -26,10 +27,9 @@ def data() -> pd.DataFrame:
 
 @st.cache_resource
 def fitted_model():
-    frame = data()
-    model = make_logistic_model()
-    model.fit(frame[FEATURES], frame[TARGET])
-    return model
+    if not MODEL_PATH.exists():
+        return None
+    return joblib.load(MODEL_PATH)
 
 
 def load_metrics() -> dict[str, object] | None:
@@ -44,7 +44,7 @@ st.set_page_config(
     layout="wide",
 )
 
-st.title("Personalized Academic Support")
+st.title("EarlyNudge: Mid-Semester Academic Support Triage from Grade and Engagement Signals")
 st.caption("Case 52 · Explainable mid-year review prototype")
 st.info(
     "This classroom prototype estimates whether a student situation should be reviewed for an optional support conversation. "
@@ -96,10 +96,16 @@ with overview_tab:
                 "Recall": result["holdout_recall_priority"],
                 "F1": result["holdout_f1_priority"],
                 "ROC AUC": result["holdout_roc_auc"],
+                "CV train BA": result["cv_mean_train_balanced_accuracy"],
+                "Train−val gap": result["overfit_gap_balanced_accuracy"],
             })
         st.dataframe(
             pd.DataFrame(rows).set_index("Model").style.format("{:.3f}"),
             use_container_width=True,
+        )
+        st.caption(
+            "The app uses the exact logistic-regression pipeline evaluated above (trained on the 75% partition and saved to outputs/logistic_model.joblib). "
+            "The early-warning row drops G1/G2 to show how much the model depends on earlier grades."
         )
         st.caption(
             "Stratified 75/25 holdout with random state 52. Five-fold cross-validation is performed only on the training partition. "
@@ -149,6 +155,10 @@ with profile_tab:
         submitted = st.form_submit_button("Review this situation", type="primary")
 
     if submitted:
+        model = fitted_model()
+        if model is None:
+            st.error("Model file missing. Run `python3 src/train_evaluate.py` first.")
+            st.stop()
         profile = {
             "G1": int(g1),
             "G2": int(g2),
@@ -161,9 +171,7 @@ with profile_tab:
             "internet": internet,
             "higher": higher,
         }
-        probability = float(
-            fitted_model().predict_proba(pd.DataFrame([profile]))[0, 1]
-        )
+        probability = float(model.predict_proba(pd.DataFrame([profile]))[0, 1])
         result_left, result_right = st.columns([1, 2])
         with result_left:
             st.metric("Estimated review score", f"{probability:.0%}")

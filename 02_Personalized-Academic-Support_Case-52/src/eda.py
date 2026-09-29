@@ -7,6 +7,7 @@ from pathlib import Path
 from modeling import FEATURES, ROOT, TARGET, load_dataset
 
 OUT = ROOT / "outputs"
+NUMERIC_COLUMNS = ["G1", "G2", "G3", "studytime", "failures", "absences", "traveltime"]
 
 
 def write_bar_svg(
@@ -84,9 +85,36 @@ def run() -> None:
         "%",
     )
 
+    school_rates = frame.groupby("school")[TARGET].mean().mul(100)
+    school_sizes = frame["school"].value_counts()
+    write_bar_svg(
+        OUT / "priority_by_school.svg",
+        "Support-priority rate by school",
+        [f"{s} (n={int(school_sizes[s])})" for s in ["GP", "MS"]],
+        [float(school_rates[s]) for s in ["GP", "MS"]],
+        "Priority rate (%)",
+        "#7A4CC2",
+        "%",
+    )
+    failure_rates = frame.groupby("failures")[TARGET].mean().mul(100)
+    write_bar_svg(
+        OUT / "priority_by_failures.svg",
+        "Support-priority rate by previous class failures",
+        [str(v) for v in failure_rates.index],
+        [float(v) for v in failure_rates.values],
+        "Priority rate (%)",
+        "#C2413B",
+        "%",
+    )
+    corr = frame[NUMERIC_COLUMNS].corr().round(3)
+    zero_g3 = int((frame["G3"] == 0).sum())
+    zero_g3_with_g2 = int(((frame["G3"] == 0) & (frame["G2"] > 0)).sum())
+    absences_skew = float(frame["absences"].skew())
+    high_absence = int((frame["absences"] > 20).sum())
+
     missing = int(frame[FEATURES + ["G3"]].isna().sum().sum())
     duplicates = int(frame.duplicated().sum())
-    numeric = frame[["G1", "G2", "G3", "studytime", "failures", "absences", "traveltime"]].describe().round(2)
+    numeric = frame[NUMERIC_COLUMNS].describe().round(2)
     lines = [
         "# Exploratory data analysis",
         "",
@@ -104,6 +132,21 @@ def run() -> None:
             for index, row in numeric.iterrows()
         ],
         "",
+        "## Data-quality issues",
+        "",
+        f"- {zero_g3} rows have G3 = 0 ({zero_g3_with_g2} of them with G2 > 0). These look like students who left or missed the final assessment rather than true zero attainment, so they are noisy positive labels. They are kept, because excluding them would hide real disengagement, and flagged as a limitation.",
+        f"- Absences are right-skewed (skew {absences_skew:.2f}); {high_absence} rows exceed 20 and the maximum is {int(frame['absences'].max())}. Standard scaling keeps them, and logistic regression is sensitive to such outliers.",
+        f"- G1 and G2 are strongly collinear (r = {corr.loc['G1', 'G2']:.3f}) and G2 correlates {corr.loc['G2', 'G3']:.3f} with G3, so coefficients for G1 and G2 should not be read independently.",
+        "- `studytime` and `traveltime` are ordinal bands (1–4), not hours. They are scaled as ordered numbers, which assumes equal spacing between bands.",
+        f"- `student.txt` documents failures as `n if 1<=n<3, else 4`, but the maximum observed value is {int(frame['failures'].max())}. Value 3 is therefore treated as '3 or more'.",
+        "- G1 and G2 are quoted strings in the raw CSV, but they parse cleanly as integers. No missing values or exact duplicates are present.",
+        "",
+        "## Correlation with final grade G3",
+        "",
+        "| Feature | r with G3 |",
+        "| --- | ---: |",
+        *[f"| {c} | {corr.loc[c, 'G3']:.3f} |" for c in NUMERIC_COLUMNS if c != "G3"],
+        "",
         "## Observations",
         "",
         "- The positive class is the minority, so accuracy alone is unsuitable. Balanced accuracy, positive-class precision, recall, F1, ROC AUC, and a confusion matrix are reported.",
@@ -111,12 +154,18 @@ def run() -> None:
         "- The source contains demographic, family, health, and alcohol-use fields. They are excluded from this model because they are unnecessary for the classroom objective and could create intrusive or discriminatory profiling.",
         "- The supplied dataset has no documented missing values. The pipeline still includes training-fitted imputers so its preprocessing steps are explicit and robust to future missing inputs.",
         "- Records come from two Portuguese secondary schools and cannot be assumed to represent another institution, country, age group, or current cohort.",
+        f"- Priority rate differs sharply by school: GP {school_rates['GP']:.1f}% vs MS {school_rates['MS']:.1f}%. `school` is not a model input, but any input correlated with school can carry this gap, so errors must be checked per school (see the report's bias section).",
+        f"- Priority rate rises with previous failures: {', '.join(f'{int(k)} → {v:.1f}%' for k, v in failure_rates.items())}.",
         "",
         "![Target balance](target_balance.svg)",
         "",
         "![Second-period grades](g2_distribution.svg)",
         "",
         "![Priority rate by study time](priority_by_studytime.svg)",
+        "",
+        "![Priority rate by school](priority_by_school.svg)",
+        "",
+        "![Priority rate by failures](priority_by_failures.svg)",
     ]
     (OUT / "eda_summary.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
     print(f"Wrote EDA for {len(frame)} rows to {OUT}")

@@ -22,6 +22,18 @@
   "cross_validation": "5-fold stratified CV on the 75% training partition",
   "models": {
     "Majority baseline": {
+      "features": [
+        "G1",
+        "G2",
+        "studytime",
+        "failures",
+        "absences",
+        "traveltime",
+        "schoolsup",
+        "famsup",
+        "internet",
+        "higher"
+      ],
       "holdout_accuracy": 0.8466,
       "holdout_balanced_accuracy": 0.5,
       "holdout_precision_priority": 0.0,
@@ -35,12 +47,26 @@
         "tp": 0
       },
       "cv_mean_balanced_accuracy": 0.5,
+      "cv_mean_train_balanced_accuracy": 0.5,
+      "overfit_gap_balanced_accuracy": 0.0,
       "cv_mean_precision_priority": 0.0,
       "cv_mean_recall_priority": 0.0,
       "cv_mean_f1_priority": 0.0,
       "cv_mean_roc_auc": 0.5
     },
     "Logistic regression": {
+      "features": [
+        "G1",
+        "G2",
+        "studytime",
+        "failures",
+        "absences",
+        "traveltime",
+        "schoolsup",
+        "famsup",
+        "internet",
+        "higher"
+      ],
       "holdout_accuracy": 0.8957,
       "holdout_balanced_accuracy": 0.8729,
       "holdout_precision_priority": 0.6176,
@@ -54,12 +80,26 @@
         "tp": 21
       },
       "cv_mean_balanced_accuracy": 0.9023,
+      "cv_mean_train_balanced_accuracy": 0.9423,
+      "overfit_gap_balanced_accuracy": 0.0399,
       "cv_mean_precision_priority": 0.6356,
       "cv_mean_recall_priority": 0.9067,
       "cv_mean_f1_priority": 0.7417,
       "cv_mean_roc_auc": 0.9768
     },
     "Decision tree": {
+      "features": [
+        "G1",
+        "G2",
+        "studytime",
+        "failures",
+        "absences",
+        "traveltime",
+        "schoolsup",
+        "famsup",
+        "internet",
+        "higher"
+      ],
       "holdout_accuracy": 0.865,
       "holdout_balanced_accuracy": 0.8384,
       "holdout_precision_priority": 0.5405,
@@ -73,10 +113,130 @@
         "tp": 20
       },
       "cv_mean_balanced_accuracy": 0.8975,
+      "cv_mean_train_balanced_accuracy": 0.9321,
+      "overfit_gap_balanced_accuracy": 0.0346,
       "cv_mean_precision_priority": 0.6087,
       "cv_mean_recall_priority": 0.9067,
       "cv_mean_f1_priority": 0.7216,
       "cv_mean_roc_auc": 0.9498
+    },
+    "Logistic regression \u2014 no G1/G2 (early warning)": {
+      "features": [
+        "studytime",
+        "failures",
+        "absences",
+        "traveltime",
+        "schoolsup",
+        "famsup",
+        "internet",
+        "higher"
+      ],
+      "holdout_accuracy": 0.7853,
+      "holdout_balanced_accuracy": 0.6439,
+      "holdout_precision_priority": 0.3438,
+      "holdout_recall_priority": 0.44,
+      "holdout_f1_priority": 0.386,
+      "holdout_roc_auc": 0.6907,
+      "confusion_matrix_tn_fp_fn_tp": {
+        "tn": 117,
+        "fp": 21,
+        "fn": 14,
+        "tp": 11
+      },
+      "cv_mean_balanced_accuracy": 0.7526,
+      "cv_mean_train_balanced_accuracy": 0.7812,
+      "overfit_gap_balanced_accuracy": 0.0287,
+      "cv_mean_precision_priority": 0.4313,
+      "cv_mean_recall_priority": 0.68,
+      "cv_mean_f1_priority": 0.5199,
+      "cv_mean_roc_auc": 0.8094
+    }
+  },
+  "tree_depth_curve": [
+    {
+      "depth": 1,
+      "train_balanced_accuracy": 0.9168,
+      "validation_balanced_accuracy": 0.9168
+    },
+    {
+      "depth": 2,
+      "train_balanced_accuracy": 0.9177,
+      "validation_balanced_accuracy": 0.9156
+    },
+    {
+      "depth": 3,
+      "train_balanced_accuracy": 0.9271,
+      "validation_balanced_accuracy": 0.8992
+    },
+    {
+      "depth": 4,
+      "train_balanced_accuracy": 0.9321,
+      "validation_balanced_accuracy": 0.8975
+    },
+    {
+      "depth": 5,
+      "train_balanced_accuracy": 0.9321,
+      "validation_balanced_accuracy": 0.8975
+    },
+    {
+      "depth": 6,
+      "train_balanced_accuracy": 0.9321,
+      "validation_balanced_accuracy": 0.8975
+    },
+    {
+      "depth": 7,
+      "train_balanced_accuracy": 0.9321,
+      "validation_balanced_accuracy": 0.8975
+    },
+    {
+      "depth": 8,
+      "train_balanced_accuracy": 0.9321,
+      "validation_balanced_accuracy": 0.8975
+    },
+    {
+      "depth": 9,
+      "train_balanced_accuracy": 0.9321,
+      "validation_balanced_accuracy": 0.8975
+    },
+    {
+      "depth": 10,
+      "train_balanced_accuracy": 0.9321,
+      "validation_balanced_accuracy": 0.8975
+    }
+  ],
+  "logistic_error_profile": {
+    "false_negative": {
+      "count": 4,
+      "mean": {
+        "G1": 9.5,
+        "G2": 10.5,
+        "studytime": 1.25,
+        "failures": 0.0,
+        "absences": 3.5,
+        "traveltime": 2.0
+      }
+    },
+    "false_positive": {
+      "count": 13,
+      "mean": {
+        "G1": 8.85,
+        "G2": 9.15,
+        "studytime": 1.69,
+        "failures": 0.38,
+        "absences": 3.38,
+        "traveltime": 1.31
+      }
+    },
+    "true_positive": {
+      "count": 21,
+      "mean": {
+        "G1": 7.52,
+        "G2": 7.38,
+        "studytime": 1.52,
+        "failures": 0.38,
+        "absences": 4.19,
+        "traveltime": 1.62
+      }
     }
   }
 }

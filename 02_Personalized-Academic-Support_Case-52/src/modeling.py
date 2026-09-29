@@ -43,24 +43,34 @@ def load_dataset(path: Path = DATA) -> pd.DataFrame:
     return frame
 
 
-def make_preprocessor() -> ColumnTransformer:
-    numeric = Pipeline([
+EARLY_NUMERIC_FEATURES = ["studytime", "failures", "absences", "traveltime"]
+MODEL_PATH = ROOT / "outputs" / "logistic_model.joblib"
+
+
+def make_preprocessor(
+    numeric: list[str] = NUMERIC_FEATURES,
+    categorical: list[str] = CATEGORICAL_FEATURES,
+) -> ColumnTransformer:
+    numeric_steps = Pipeline([
         ("impute", SimpleImputer(strategy="median")),
         ("scale", StandardScaler()),
     ])
-    categorical = Pipeline([
+    categorical_steps = Pipeline([
         ("impute", SimpleImputer(strategy="most_frequent")),
         ("encode", OneHotEncoder(handle_unknown="ignore")),
     ])
     return ColumnTransformer([
-        ("numeric", numeric, NUMERIC_FEATURES),
-        ("categorical", categorical, CATEGORICAL_FEATURES),
+        ("numeric", numeric_steps, numeric),
+        ("categorical", categorical_steps, categorical),
     ])
 
 
-def make_logistic_model() -> Pipeline:
+def make_logistic_model(
+    numeric: list[str] = NUMERIC_FEATURES,
+    categorical: list[str] = CATEGORICAL_FEATURES,
+) -> Pipeline:
     return Pipeline([
-        ("preprocess", make_preprocessor()),
+        ("preprocess", make_preprocessor(numeric, categorical)),
         ("model", LogisticRegression(
             max_iter=2000,
             class_weight="balanced",
