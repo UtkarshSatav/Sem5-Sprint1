@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -8,9 +9,18 @@ import 'package:shared_preferences/shared_preferences.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(ChangeNotifierProvider(
-    create: (_) => ShuttleStore()..load(),
+    create: (_) => ShuttleStore()..load()..startLiveUpdates(),
     child: const CampusShuttleApp(),
   ));
+}
+
+class ShuttleRoute {
+  const ShuttleRoute(
+      {required this.id, required this.name, required this.color});
+
+  final String id;
+  final String name;
+  final Color color;
 }
 
 class ShuttleTrip {
@@ -24,11 +34,11 @@ class ShuttleTrip {
     required this.arrival,
     required this.available,
     required this.capacity,
-    required this.color,
-  }) : initialAvailable = available;
+  }) : initialAvailable = available,
+       othersReserved = capacity - available;
 
   final String id;
-  final String route;
+  final ShuttleRoute route;
   final String origin;
   final String destination;
   final List<String> stops;
@@ -36,8 +46,10 @@ class ShuttleTrip {
   final String arrival;
   final int capacity;
   final int initialAvailable;
-  final Color color;
   int available;
+  int othersReserved;
+  Color get color => route.color;
+  int get reserved => capacity - available;
 }
 
 class ShuttleBooking {
@@ -67,10 +79,24 @@ class ShuttleBooking {
 class ShuttleStore extends ChangeNotifier {
   static const _storageKey = 'campus_shuttle_bookings_v1';
 
+  static const northLoop = ShuttleRoute(
+      id: 'north', name: 'North Loop', color: Color(0xFF2F6FED));
+  static const residences = ShuttleRoute(
+      id: 'res', name: 'Residences', color: Color(0xFF149477));
+  static const westConnector = ShuttleRoute(
+      id: 'west', name: 'West Connector', color: Color(0xFFE2782D));
+  static const routes = [northLoop, residences, westConnector];
+
+  ShuttleStore({Random? random}) : _random = random ?? Random();
+
+  final Random _random;
+  Timer? _liveTimer;
+  String? lastActivity;
+
   final List<ShuttleTrip> _trips = [
     ShuttleTrip(
       id: 'north-0815',
-      route: 'North Loop',
+      route: northLoop,
       origin: 'North Gate',
       destination: 'Main Campus',
       stops: const [
@@ -83,11 +109,10 @@ class ShuttleStore extends ChangeNotifier {
       arrival: '8:35 AM',
       available: 8,
       capacity: 24,
-      color: const Color(0xFF2F6FED),
     ),
     ShuttleTrip(
       id: 'res-0845',
-      route: 'Residences',
+      route: residences,
       origin: 'Maple Residence',
       destination: 'Main Campus',
       stops: const [
@@ -100,11 +125,10 @@ class ShuttleStore extends ChangeNotifier {
       arrival: '9:05 AM',
       available: 4,
       capacity: 20,
-      color: const Color(0xFF149477),
     ),
     ShuttleTrip(
       id: 'west-0915',
-      route: 'West Connector',
+      route: westConnector,
       origin: 'West Parking',
       destination: 'Engineering',
       stops: const [
@@ -117,11 +141,10 @@ class ShuttleStore extends ChangeNotifier {
       arrival: '9:32 AM',
       available: 12,
       capacity: 24,
-      color: const Color(0xFFE2782D),
     ),
     ShuttleTrip(
       id: 'north-0945',
-      route: 'North Loop',
+      route: northLoop,
       origin: 'North Gate',
       destination: 'Main Campus',
       stops: const [
@@ -134,7 +157,6 @@ class ShuttleStore extends ChangeNotifier {
       arrival: '10:05 AM',
       available: 2,
       capacity: 24,
-      color: const Color(0xFF2F6FED),
     ),
   ];
 
@@ -151,6 +173,7 @@ class ShuttleStore extends ChangeNotifier {
   Future<void> load() async {
     for (final trip in _trips) {
       trip.available = trip.initialAvailable;
+      trip.othersReserved = trip.capacity - trip.initialAvailable;
     }
     _bookings.clear();
     try {
@@ -202,9 +225,52 @@ class ShuttleStore extends ChangeNotifier {
     if (index < 0) return;
     final booking = _bookings.removeAt(index);
     final selected = trip(booking.tripId);
-    if (selected.available < selected.initialAvailable) selected.available++;
+    selected.available = selected.capacity - selected.othersReserved;
     notifyListeners();
     unawaited(_save());
+  }
+
+  /// Simulated booking by another student. Leaves the last seat for the demo user.
+  bool simulateBooking(String tripId) {
+    final selected = trip(tripId);
+    if (!ready || selected.available <= 1) return false;
+    selected.available--;
+    selected.othersReserved++;
+    lastActivity =
+        'Another student booked ${selected.route.name} · ${selected.departure}';
+    notifyListeners();
+    return true;
+  }
+
+  /// Simulated cancellation by another student.
+  bool simulateCancellation(String tripId) {
+    final selected = trip(tripId);
+    if (!ready || selected.othersReserved <= 0) return false;
+    selected.othersReserved--;
+    selected.available++;
+    lastActivity =
+        'Another student cancelled ${selected.route.name} · ${selected.departure}';
+    notifyListeners();
+    return true;
+  }
+
+  bool simulateOtherStudent() {
+    if (!ready) return false;
+    final selected = _trips[_random.nextInt(_trips.length)];
+    return _random.nextBool()
+        ? simulateBooking(selected.id)
+        : simulateCancellation(selected.id);
+  }
+
+  void startLiveUpdates({Duration interval = const Duration(seconds: 6)}) {
+    _liveTimer?.cancel();
+    _liveTimer = Timer.periodic(interval, (_) => simulateOtherStudent());
+  }
+
+  @override
+  void dispose() {
+    _liveTimer?.cancel();
+    super.dispose();
   }
 
   Future<void> _save() async {
@@ -439,9 +505,9 @@ class _TimetableState extends State<Timetable> {
     final store = context.watch<ShuttleStore>();
     final query = _search.text.trim().toLowerCase();
     final trips = store.trips.where((trip) {
-      final routeMatch = _route == 'All routes' || trip.route == _route;
+      final routeMatch = _route == 'All routes' || trip.route.name == _route;
       final text =
-          '${trip.route} ${trip.origin} ${trip.destination} ${trip.stops.join(' ')}'
+          '${trip.route.name} ${trip.origin} ${trip.destination} ${trip.stops.join(' ')}'
               .toLowerCase();
       return routeMatch && (query.isEmpty || text.contains(query));
     }).toList();
@@ -471,6 +537,8 @@ class _TimetableState extends State<Timetable> {
             const SizedBox(height: 14),
             const _DemoNotice(),
             const SizedBox(height: 18),
+            _LiveActivity(store: store),
+            const SizedBox(height: 14),
             _Overview(store: store),
             const SizedBox(height: 28),
             Row(children: [
@@ -501,15 +569,17 @@ class _TimetableState extends State<Timetable> {
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
-                children: [
-                  'All routes',
-                  'North Loop',
-                  'Residences',
-                  'West Connector'
-                ]
+                children: ['All routes', ...ShuttleStore.routes.map((r) => r.name)]
                     .map((route) => Padding(
                           padding: const EdgeInsets.only(right: 8),
                           child: ChoiceChip(
+                            avatar: route == 'All routes'
+                                ? null
+                                : CircleAvatar(
+                                    radius: 5,
+                                    backgroundColor: ShuttleStore.routes
+                                        .firstWhere((r) => r.name == route)
+                                        .color),
                             label: Text(route),
                             selected: _route == route,
                             onSelected: (_) => setState(() => _route = route),
@@ -611,13 +681,16 @@ class _Metric extends StatelessWidget {
             child: Icon(icon, color: const Color(0xFF2456C7)),
           ),
           const SizedBox(width: 13),
-          Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(value,
-                style:
-                    const TextStyle(fontSize: 24, fontWeight: FontWeight.w800)),
-            Text(label,
-                style: const TextStyle(fontSize: 12, color: Color(0xFF667085))),
-          ]),
+          Expanded(
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(value,
+                  style: const TextStyle(
+                      fontSize: 24, fontWeight: FontWeight.w800)),
+              Text(label,
+                  style:
+                      const TextStyle(fontSize: 12, color: Color(0xFF667085))),
+            ]),
+          ),
         ]),
       );
 }
@@ -653,7 +726,7 @@ class _TripCard extends StatelessWidget {
                     child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(trip.route,
+                          Text(trip.route.name,
                               style: const TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.w700)),
                           const SizedBox(height: 5),
@@ -718,7 +791,7 @@ class _SeatBadge extends StatelessWidget {
         child: Row(mainAxisSize: MainAxisSize.min, children: [
           const Icon(Icons.event_seat_outlined, size: 16),
           const SizedBox(width: 6),
-          Text('${trip.available} left',
+          Text('${trip.available} of ${trip.capacity} left',
               style:
                   const TextStyle(fontSize: 12, fontWeight: FontWeight.w700)),
         ]),
@@ -781,7 +854,7 @@ class TripDetail extends StatelessWidget {
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(trip.route,
+                      Text(trip.route.name,
                           style: TextStyle(
                               fontSize: compact ? 28 : 34,
                               fontWeight: FontWeight.w800)),
@@ -792,6 +865,8 @@ class TripDetail extends StatelessWidget {
               _SeatBadge(trip: trip),
             ]),
             const SizedBox(height: 22),
+            _SeatMeter(trip: trip),
+            const SizedBox(height: 16),
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(22),
@@ -843,6 +918,7 @@ class TripDetail extends StatelessWidget {
                       icon: const Icon(Icons.check_circle_outline_rounded),
                       label: const Text('Seat reserved · View My Bookings'))
                   : FilledButton.icon(
+                      key: const ValueKey('reserve-button'),
                       onPressed: trip.available == 0
                           ? null
                           : () =>
@@ -871,12 +947,13 @@ Future<void> _confirmReservation(
     builder: (dialogContext) => AlertDialog(
       title: const Text('Confirm your seat'),
       content: Text(
-          'Step 3 of 4 · Reserve\n\n${trip.route}\n${trip.departure} · ${trip.origin} to ${trip.destination}\n\nThe booking will be saved on this device.'),
+          'Step 3 of 4 · Reserve\n\n${trip.route.name}\n${trip.departure} · ${trip.origin} to ${trip.destination}\n\nThe booking will be saved on this device.'),
       actions: [
         TextButton(
             onPressed: () => Navigator.pop(dialogContext, false),
             child: const Text('Go back')),
         FilledButton(
+            key: const ValueKey('confirm-reserve'),
             onPressed: () => Navigator.pop(dialogContext, true),
             child: const Text('Reserve seat')),
       ],
@@ -899,12 +976,13 @@ Future<void> _confirmReservation(
           size: 44, color: Color(0xFF067647)),
       title: const Text('Booking confirmed'),
       content: Text(
-          'Step 4 of 4 · Confirmation\n\n${trip.route} at ${trip.departure}\n${trip.origin} to ${trip.destination}\n\nThe available-seat count has been updated through Provider and this booking is saved on this device.'),
+          'Step 4 of 4 · Confirmation\n\n${trip.route.name} at ${trip.departure}\n${trip.origin} to ${trip.destination}\n\nThe available-seat count has been updated through Provider and this booking is saved on this device.'),
       actions: [
         TextButton(
             onPressed: () => Navigator.pop(dialogContext, false),
             child: const Text('Stay on trip')),
         FilledButton.icon(
+          key: const ValueKey('view-bookings'),
           onPressed: () => Navigator.pop(dialogContext, true),
           icon: const Icon(Icons.confirmation_number_outlined),
           label: const Text('View My Bookings'),
@@ -1081,7 +1159,7 @@ class _BookingCard extends StatelessWidget {
   final ShuttleBooking booking;
   @override
   Widget build(BuildContext context) {
-    final trip = context.read<ShuttleStore>().trip(booking.tripId);
+    final trip = context.watch<ShuttleStore>().trip(booking.tripId);
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Card(
@@ -1100,12 +1178,14 @@ class _BookingCard extends StatelessWidget {
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(trip.route,
+                      Text(trip.route.name,
                           style: const TextStyle(
                               fontSize: 16, fontWeight: FontWeight.w700)),
                       const SizedBox(height: 4),
                       Text('${trip.origin} → ${trip.destination}',
                           style: const TextStyle(color: Color(0xFF667085))),
+                      const SizedBox(height: 8),
+                      _SeatBadge(trip: trip),
                     ]),
               ),
             ]);
@@ -1120,6 +1200,7 @@ class _BookingCard extends StatelessWidget {
               ]),
               const SizedBox(width: 16),
               TextButton.icon(
+                key: ValueKey('cancel-${booking.id}'),
                 onPressed: () => _confirmCancellation(context, booking, trip),
                 icon: const Icon(Icons.close_rounded, size: 17),
                 label: const Text('Cancel'),
@@ -1149,12 +1230,13 @@ Future<void> _confirmCancellation(
     builder: (dialogContext) => AlertDialog(
       title: const Text('Cancel this booking?'),
       content: Text(
-          '${trip.route} at ${trip.departure}\n\nThe seat will return to availability.'),
+          '${trip.route.name} at ${trip.departure}\n\nThe seat will return to availability.'),
       actions: [
         TextButton(
             onPressed: () => Navigator.pop(dialogContext, false),
             child: const Text('Keep booking')),
         FilledButton(
+            key: const ValueKey('confirm-cancel'),
             onPressed: () => Navigator.pop(dialogContext, true),
             child: const Text('Cancel booking')),
       ],
@@ -1260,14 +1342,12 @@ class _JourneyProgress extends StatelessWidget {
 class _RouteLegend extends StatelessWidget {
   const _RouteLegend();
   @override
-  Widget build(BuildContext context) => const Wrap(
+  Widget build(BuildContext context) => Wrap(
         spacing: 18,
         runSpacing: 8,
-        children: [
-          _LegendDot(color: Color(0xFF2F6FED), label: 'North Loop'),
-          _LegendDot(color: Color(0xFF149477), label: 'Residences'),
-          _LegendDot(color: Color(0xFFE2782D), label: 'West Connector'),
-        ],
+        children: ShuttleStore.routes
+            .map((r) => _LegendDot(color: r.color, label: r.name))
+            .toList(),
       );
 }
 
@@ -1324,4 +1404,45 @@ String _shortDate(DateTime date) {
     'Dec'
   ];
   return '${date.day} ${months[date.month - 1]}';
+}
+
+class _SeatMeter extends StatelessWidget {
+  const _SeatMeter({required this.trip});
+  final ShuttleTrip trip;
+  @override
+  Widget build(BuildContext context) => Card(
+        child: Padding(
+          padding: const EdgeInsets.all(18),
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text(
+                '${trip.reserved} reserved · ${trip.available} left of ${trip.capacity}',
+                style: const TextStyle(fontWeight: FontWeight.w700)),
+            const SizedBox(height: 10),
+            LinearProgressIndicator(
+              value: trip.reserved / trip.capacity,
+              color: trip.color,
+              backgroundColor: trip.color.withValues(alpha: .15),
+              minHeight: 8,
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ]),
+        ),
+      );
+}
+
+class _LiveActivity extends StatelessWidget {
+  const _LiveActivity({required this.store});
+  final ShuttleStore store;
+  @override
+  Widget build(BuildContext context) => Row(children: [
+        const Icon(Icons.sensors_rounded, size: 18, color: Color(0xFF067647)),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(
+            store.lastActivity ??
+                'Live · seat counts update as other students book (simulated)',
+            style: const TextStyle(fontSize: 12, color: Color(0xFF344054)),
+          ),
+        ),
+      ]);
 }

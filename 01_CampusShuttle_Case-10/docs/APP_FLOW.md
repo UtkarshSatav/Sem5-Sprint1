@@ -33,3 +33,23 @@ Bookings are encoded as JSON under `campus_shuttle_bookings_v1` in `shared_prefe
 ## Data boundary
 
 Trip definitions are in app memory. Active bookings are stored locally. There is no remote database in this assessed prototype. A production multi-user implementation would require a server-side booking transaction so concurrent students cannot oversell capacity.
+
+## Data model
+
+```mermaid
+classDiagram
+  class ShuttleRoute { +id +name +color }
+  class ShuttleTrip { +id +origin +destination +stops +departure +arrival +capacity +available +othersReserved +reserved() }
+  class ShuttleBooking { +id +tripId +bookedAt +toJson() +fromJson() }
+  class ShuttleStore { +trips +bookings +reserve(tripId) +cancel(bookingId) +load() +simulateOtherStudent() }
+  ShuttleRoute "1" --> "many" ShuttleTrip : colour-coded line
+  ShuttleTrip "1" --> "0..1" ShuttleBooking : this device
+  ShuttleStore o-- ShuttleTrip
+  ShuttleStore o-- ShuttleBooking
+```
+
+Invariant for every trip: `available + othersReserved + (booked on this device ? 1 : 0) = capacity`.
+
+## Live updates
+
+The brief asks for seat counts that update live as other students book. With no backend in this prototype, `ShuttleStore.startLiveUpdates()` runs a timer that simulates another student booking or cancelling every 6 seconds and calls `notifyListeners()`. Timetable, Trip Detail and My Bookings all rebuild at the same moment. That is the synchronisation Provider provides. Simulated students never take a trip's last seat, so the demo user can always book. In production, the timer would be replaced by a server stream (for example a Firestore snapshot listener) that feeds the same store.
