@@ -1,12 +1,9 @@
-# Schedule and Project Controls — ImmuniRemind
+# Project Plan — ImmuniRemind
 
 ## 1. Planning basis and dose volume
 
-The case supplies these fixed planning inputs: 36,000 children under age five and approximately 12 scheduled doses per child. The planning volume is therefore:
-
-**36,000 children × approximately 12 doses/child ≈ 432,000 dose records.**
-
-This is a planning estimate, not a guarantee of database row count. New registrations, duplicate resolution, historical events, schedule changes, and retention can change the actual number.
+The case supplies 36,000 children under age five and approximately 12 scheduled doses per child: **36,000 × 12 = 432,000 doses to be tracked**.
+This is a planning estimate conditioned on stated assumptions, not a promise. See `06_Estimation_Sheet.md` for every formula, assumption and the sensitivity range. The baseline problem is child-level: the case reports that 23% of children miss at least one scheduled vaccine, with a 10% target.
 
 The case gives task durations and dependencies below. Durations are treated as working days for the exercise. No calendar start date, holidays, staffing availability, procurement lead time, or resource capacity is supplied, so the 51-day result is an elapsed working-day plan under those assumptions, not a committed calendar delivery date.
 
@@ -87,6 +84,15 @@ The Gantt uses an arbitrary anchor date solely to render relative durations; it 
 | M5 Test exit / pilot go-no-go | End day 36 | Critical defects closed or formally accepted; security, data quality, operational readiness, training, gateway, and rollback checks approved |
 | M6 Five-post pilot complete | End day 51 | Pilot measures collected and reconciled; authority records continue/adjust/stop decision and owner |
 
+### Pilot milestones (inside task H, days 36–51)
+
+| Milestone | Day | Entry/exit evidence |
+|---|---:|---|
+| P1 Go-live at 5 posts | 36 | Entry: M5 test exit approved. Exit: training completed for the workers at all 5 posts and the system live at those posts |
+| P2 Registration complete, first reminder batch sent | 41 | Entry: go-live at P1. Exit: all 4,500 children registered (5 × 900) and the first reminder batch sent. Registration effort: 4,500 × 4 min = 18,000 min = 300 h = 37.5 staff-days at 8 h/day; with 10 workers (2 per post), 37.5 ÷ 10 = 3.75 days, so registration completes by pilot day 4 (project day 40). See `06_Estimation_Sheet.md`, rows 16, 18 and 19 |
+| P3 Mid-pilot metric review | 46 | Entry: reminders running for 5 days. Exit: interim values of the section 8 metrics reviewed against thresholds; any early corrective action logged |
+| P4 Pilot close and scale decision | 51 | Entry: all pilot metrics collected and reconciled. Exit: scale decision (Go, Conditional go or No-go) recorded with its approver |
+
 Pilot authorization is a decision gate; the schedule does not imply automatic deployment to all 40 posts. Expansion requires a separately approved scale decision and operational plan.
 
 ## 6. Resource allocation and estimate assumptions
@@ -106,7 +112,7 @@ The case gives task duration but no staffing, cost, or named owners. The table b
 
 Estimation assumptions: tasks are sequential within each work package; dependencies are finish-to-start; scope is stable; approvals arrive without additional wait time; resources are available when scheduled; no rework or external procurement delay is included. These assumptions make 51 days an optimistic CPM baseline. A schedule reserve must be set after resource availability and authority approval timing are known; no reserve is invented here.
 
-## 7. Monitoring and variance response
+## 7. Monitoring and control
 
 At each weekly review (proposed cadence), the project lead records planned/actual start and finish, remaining duration, dependency status, open defects by severity, approvals due, risks, and estimate-to-complete. Recalculate the critical path whenever actual duration or dependency changes. Report both task-level variance and effect on the day-51 pilot milestone.
 
@@ -121,9 +127,66 @@ At each weekly review (proposed cadence), the project lead records planned/actua
 
 Thresholds above are proposed project controls, not supplied targets. Exact severity definitions, stop guardrails, baseline and measurement window are approval items before pilot.
 
+### 7.1 Actual vs plan
+
+*Simulated for the case study: the actual durations below are invented to demonstrate variance analysis; they are not observed project data.*
+
+| Task | Planned dur | Actual dur | Variance (days) | Planned ES–EF | Actual ES–EF | On critical path? |
+|---|---:|---:|---:|---|---|---|
+| A Requirements | 6 | 6 | 0 | 0–6 | 0–6 | Yes |
+| B Schedule rules | 4 | 5 | +1 | 6–10 | 6–11 | No (float 6 → 5) |
+| C Registration | 10 | 12 | +2 | 6–16 | 6–18 | Yes |
+| D Schedule generator | 6 | 6 | 0 | 16–22 | 18–24 | Yes |
+| E SMS reminders | 5 | 5 | 0 | 22–27 | 24–29 | No |
+| F Supervisor dashboard | 7 | 8 | +1 | 22–29 | 24–32 | Yes |
+| G Testing | 7 | 7 | 0 | 29–36 | 32–39 | Yes |
+| H Pilot | 15 | 15 | 0 | 36–51 | 39–54 | Yes |
+
+### 7.2 Variance calculation
+
+*Simulated for the case study.*
+
+1. Task variance = actual − planned duration: B = 5 − 4 = +1; C = 12 − 10 = +2; F = 8 − 7 = +1; all other tasks 0.
+2. B is not critical. Its overrun is absorbed by its float, which falls from 6 to 5 days (B now finishes at day 11 against a late finish of 16). It does not move the finish date.
+3. C and F are on the critical path, so their overruns propagate: 2 + 1 = 3 days.
+4. Forecast finish = 51 + 3 = 54 days against a plan of 51.
+5. Schedule variance at completion, SV = 54 − 51 = **+3 days**, or 3 ÷ 51 = **+5.9%** late.
+6. Status is taken at day 32, when F finishes. The work completed by then was planned to finish at day 29, so SV(t) = 29 − 32 = **−3 days**.
+7. SPI(t) = 29 ÷ 32 = **0.906**.
+
+SPI(t) < 1 means the project reached this amount of planned work later than planned: here, only about 0.91 days of planned progress are earned per elapsed day, so without action the schedule slips.
+
+### 7.3 Corrective action
+
+*Simulated for the case study.* The approved option has two actions:
+
+1. Crash Testing (G) from 7 to 5 days by adding one QA tester from the department IT cell. This recovers 2 days.
+2. Overlap 1 day of pilot training with the last day of Testing. This recovers 1 day.
+
+Recovery = 2 + 1 = 3 days, so the forecast finish returns from 54 to 54 − 3 = **51 days**.
+
+| Role | Responsibility |
+|---|---|
+| Proposed by: Project manager | Analyses the variance, prepares the recovery option and submits the change request |
+| Confirmed by: QA lead | Checks that the Testing exit criteria are unchanged after crashing and overlap |
+| Approved by: Project Sponsor (Municipal Health Officer), via the change control board | Approves the baseline change and the added resource; the decision and revised CPM are logged |
+
+### 7.4 Pilot metrics: plan vs actual
+
+*Simulated for the case study: pilot results are invented to demonstrate the scale rule.*
+
+| Metric | Plan | Actual | Variance |
+|---|---|---|---|
+| Registration completeness | ≥ 98% | 97.2% | −0.8 pp |
+| SMS delivery-confirmed within 24 h | ≥ 95% | 93.1% | −1.9 pp |
+| Doses due in the pilot given within 7 days of the due date | ≥ 80% | 84.0% | +4.0 pp |
+| Overdue doses among doses due during the pilot | ≤ 16% | 14.2% | −1.8 pp (better) |
+| Worker usability task success | ≥ 4 of 5 | 4 of 5 | 0 |
+| Privacy incidents | 0 | 0 | 0 |
+
 ## 8. Pilot measures and scale decision
 
-Before pilot, agree a baseline period, cohort inclusion, dose denominator, exclusion handling, post-level reporting, and privacy controls. The 23% baseline and 10% one-year goal come from the case; the brief does not specify measurement definitions or provide pilot outcomes.
+Before pilot, agree a baseline period, cohort inclusion, dose denominator, exclusion handling, post-level reporting, and privacy controls. The case gives a child-level baseline (23% of children miss at least one scheduled vaccine) and a 10% one-year goal; it does not specify measurement definitions. The pilot results in 7.4 are simulated.
 
 | Measure | Definition to approve | Use |
 |---|---|---|
@@ -135,8 +198,14 @@ Before pilot, agree a baseline period, cohort inclusion, dose denominator, exclu
 | Access-control failures | Count and severity of unauthorized attempts detected in test/pilot monitoring | Verify scope enforcement and response |
 | Operational burden | Staff time or workload measure using an agreed collection method | Check feasibility at five pilot posts |
 
-**Scale gate:** consider expansion only after five-post results are complete, data and metric definitions are reconciled, no unaccepted high-severity security/privacy/clinical-rule issue remains, workers are trained, support and gateway operation are ready, and the authority approves a documented rollout decision. The case gives no evidence that target attainment or scale readiness has occurred.
+**Scale rule** (decision at P4, day 51):
 
-## 9. Closure and lessons learned template
+- **Go** if every threshold is met.
+- **Conditional go** if at most 2 thresholds are missed, each by 3 pp or less, and each has a corrective action.
+- **No-go** if there is any privacy incident or more than 2 misses.
 
-At pilot close, record actual dates and effort, planned-versus-actual task variances, defects by phase/severity, gateway outcomes, data-quality findings, worker feedback, pilot metric definitions/results, unresolved risks, accepted deviations, and the authority’s scale decision. Retain only approved data and remove test/pilot personal data under the approved retention policy. Lessons should link each finding to an owner and a change to the next plan; do not write assumed lessons as observed facts before the pilot.
+*Simulated for the case study.* **Outcome: Conditional go.** Two thresholds are missed: registration completeness by 0.8 pp and SMS delivery by 1.9 pp, both within 3 pp; the other four are met and there are no privacy incidents. The corrective actions are phone-number verification at registration and a secondary gateway route. The decision is approved by the Municipal Health Officer and the steering committee. Expansion to all 40 posts still needs its own operational plan.
+
+## 9. Closure and lessons learned
+
+See `07_Closure_and_Lessons_Learned.md` for the closure note and lessons-learned page.
