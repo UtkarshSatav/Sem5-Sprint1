@@ -1,0 +1,12 @@
+.DS_Store
+.superpowers/
+# Flutter
+01_CampusShuttle_Case-10/.dart_tool/
+01_CampusShuttle_Case-10/build/
+01_CampusShuttle_Case-10/.flutter-plugins-dependencies
+01_CampusShuttle_Case-10/.firebase/
+# Python
+02_Personalized-Academic-Support_Case-52/path/
+02_Personalized-Academic-Support_Case-52/.venv/
+__pycache__/
+*.py[cod]

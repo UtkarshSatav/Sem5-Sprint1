@@ -1,0 +1,16 @@
+.dart_tool/
+.packages
+.flutter-plugins
+.flutter-plugins-dependencies
+/build/
+/coverage/
+.DS_Store
+.idea/
+*.iml
+.firebase/
+functions/node_modules/
+functions/.env*
+*-service-account*.json
+*-firebase-adminsdk-*.json
+firebase-debug.log
+firestore-debug.log

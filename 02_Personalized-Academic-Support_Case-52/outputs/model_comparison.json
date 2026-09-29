@@ -1,0 +1,82 @@
+{
+  "dataset": "UCI Student Performance \u2014 Portuguese course",
+  "doi": "10.24432/C5TG7T",
+  "license": "CC BY 4.0",
+  "rows": 649,
+  "features": [
+    "G1",
+    "G2",
+    "studytime",
+    "failures",
+    "absences",
+    "traveltime",
+    "schoolsup",
+    "famsup",
+    "internet",
+    "higher"
+  ],
+  "target": "support_priority = 1 when final grade G3 < 10/20",
+  "positive_rows": 100,
+  "test_fraction": 0.25,
+  "random_state": 52,
+  "cross_validation": "5-fold stratified CV on the 75% training partition",
+  "models": {
+    "Majority baseline": {
+      "holdout_accuracy": 0.8466,
+      "holdout_balanced_accuracy": 0.5,
+      "holdout_precision_priority": 0.0,
+      "holdout_recall_priority": 0.0,
+      "holdout_f1_priority": 0.0,
+      "holdout_roc_auc": 0.5,
+      "confusion_matrix_tn_fp_fn_tp": {
+        "tn": 138,
+        "fp": 0,
+        "fn": 25,
+        "tp": 0
+      },
+      "cv_mean_balanced_accuracy": 0.5,
+      "cv_mean_precision_priority": 0.0,
+      "cv_mean_recall_priority": 0.0,
+      "cv_mean_f1_priority": 0.0,
+      "cv_mean_roc_auc": 0.5
+    },
+    "Logistic regression": {
+      "holdout_accuracy": 0.8957,
+      "holdout_balanced_accuracy": 0.8729,
+      "holdout_precision_priority": 0.6176,
+      "holdout_recall_priority": 0.84,
+      "holdout_f1_priority": 0.7119,
+      "holdout_roc_auc": 0.9391,
+      "confusion_matrix_tn_fp_fn_tp": {
+        "tn": 125,
+        "fp": 13,
+        "fn": 4,
+        "tp": 21
+      },
+      "cv_mean_balanced_accuracy": 0.9023,
+      "cv_mean_precision_priority": 0.6356,
+      "cv_mean_recall_priority": 0.9067,
+      "cv_mean_f1_priority": 0.7417,
+      "cv_mean_roc_auc": 0.9768
+    },
+    "Decision tree": {
+      "holdout_accuracy": 0.865,
+      "holdout_balanced_accuracy": 0.8384,
+      "holdout_precision_priority": 0.5405,
+      "holdout_recall_priority": 0.8,
+      "holdout_f1_priority": 0.6452,
+      "holdout_roc_auc": 0.8923,
+      "confusion_matrix_tn_fp_fn_tp": {
+        "tn": 121,
+        "fp": 17,
+        "fn": 5,
+        "tp": 20
+      },
+      "cv_mean_balanced_accuracy": 0.8975,
+      "cv_mean_precision_priority": 0.6087,
+      "cv_mean_recall_priority": 0.9067,
+      "cv_mean_f1_priority": 0.7216,
+      "cv_mean_roc_auc": 0.9498
+    }
+  }
+}

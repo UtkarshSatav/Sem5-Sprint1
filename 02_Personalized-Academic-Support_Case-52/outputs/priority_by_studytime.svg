@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="420" viewBox="0 0 760 420">
+<rect width="100%" height="100%" fill="white"/>
+<text x="76" y="34" font-family="Arial" font-size="21" font-weight="bold">Support-priority rate by weekly study-time band</text>
+<text x="19" y="205" transform="rotate(-90 19 205)" font-family="Arial" font-size="13">Priority rate (%)</text>
+<line x1="76" y1="325.0" x2="636" y2="325.0" stroke="#e4e7ec"/>
+<text x="66" y="329.0" text-anchor="end" font-family="Arial" font-size="11">0</text>
+<line x1="76" y1="260.8" x2="636" y2="260.8" stroke="#e4e7ec"/>
+<text x="66" y="264.8" text-anchor="end" font-family="Arial" font-size="11">6</text>
+<line x1="76" y1="196.5" x2="636" y2="196.5" stroke="#e4e7ec"/>
+<text x="66" y="200.5" text-anchor="end" font-family="Arial" font-size="11">12</text>
+<line x1="76" y1="132.2" x2="636" y2="132.2" stroke="#e4e7ec"/>
+<text x="66" y="136.2" text-anchor="end" font-family="Arial" font-size="11">18</text>
+<line x1="76" y1="68.0" x2="636" y2="68.0" stroke="#e4e7ec"/>
+<text x="66" y="72.0" text-anchor="end" font-family="Arial" font-size="11">24</text>
+<rect x="105.4" y="68.0" width="81.2" height="257.0" rx="5" fill="#D97732"/>
+<text x="146.0" y="61.0" text-anchor="middle" font-family="Arial" font-size="12">23.6%</text>
+<text x="146.0" y="347" text-anchor="middle" font-family="Arial" font-size="11">&lt;2h</text>
+<rect x="245.4" y="178.5" width="81.2" height="146.5" rx="5" fill="#D97732"/>
+<text x="286.0" y="171.5" text-anchor="middle" font-family="Arial" font-size="12">13.4%</text>
+<text x="286.0" y="347" text-anchor="middle" font-family="Arial" font-size="11">2–5h</text>
+<rect x="385.4" y="246.4" width="81.2" height="78.6" rx="5" fill="#D97732"/>
+<text x="426.0" y="239.4" text-anchor="middle" font-family="Arial" font-size="12">7.2%</text>
+<text x="426.0" y="347" text-anchor="middle" font-family="Arial" font-size="11">5–10h</text>
+<rect x="525.4" y="262.7" width="81.2" height="62.3" rx="5" fill="#D97732"/>
+<text x="566.0" y="255.7" text-anchor="middle" font-family="Arial" font-size="12">5.7%</text>
+<text x="566.0" y="347" text-anchor="middle" font-family="Arial" font-size="11">&gt;10h</text>
+<line x1="76" y1="68" x2="76" y2="325" stroke="#344054"/>
+<line x1="76" y1="325" x2="636" y2="325" stroke="#344054"/>
+</svg>
