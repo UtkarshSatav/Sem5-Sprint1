@@ -1,4 +1,4 @@
-# EarlyNudge: Mid-Semester Academic Support Triage from Grade and Engagement Signals (proposed title)
+# PASS
 
 Case 52 — Personalized Academic Support · Final Report
 

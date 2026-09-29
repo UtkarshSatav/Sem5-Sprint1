@@ -1,10 +1,10 @@
-# EarlyNudge: Mid-Semester Academic Support Triage from Grade and Engagement Signals (proposed title)
+# PASS
 
 Presentation and Viva — Case 52
 
 ## Eight-slide presentation
 
-1. **Title** — EarlyNudge: Mid-Semester Academic Support Triage from Grade and Engagement Signals (proposed title); Case 52.
+1. **Title** — PASS; Case 52.
 2. **Problem and output** — support students early; output is a human review prompt (classification plus transparent rules).
 3. **Dataset and data-quality issues** — UCI Portuguese course, 649 records; `G3 < 10` is the positive class; 15 rows with G3 = 0, skewed absences, G1/G2 collinearity, failures documentation mismatch.
 4. **EDA, including the school bias finding** — 15.4% priority class; GP 7.6% vs MS 30.1%; failures raise the rate from 9.3% to 64.3%.

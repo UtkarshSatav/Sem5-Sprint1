@@ -10,3 +10,6 @@
 02_Personalized-Academic-Support_Case-52/.venv/
 __pycache__/
 *.py[cod]
+
+# Internal planning notes (not part of the submission)
+docs/superpowers/

@@ -44,7 +44,7 @@ st.set_page_config(
     layout="wide",
 )
 
-st.title("EarlyNudge: Mid-Semester Academic Support Triage from Grade and Engagement Signals")
+st.title("PASS")
 st.caption("Case 52 · Explainable mid-year review prototype")
 st.info(
     "This classroom prototype estimates whether a student situation should be reviewed for an optional support conversation. "

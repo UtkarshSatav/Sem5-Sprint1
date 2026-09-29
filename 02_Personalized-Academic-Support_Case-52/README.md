@@ -1,6 +1,6 @@
 # Personalized Academic Support — Case 52
 
-Project title (proposed title): EarlyNudge: Mid-Semester Academic Support Triage from Grade and Engagement Signals.
+Project title: **PASS**.
 
 This project implements the assigned end-to-end machine-learning case study: problem definition, documented dataset, EDA, preprocessing, a baseline and two model approaches, evaluation and error analysis, a working Streamlit interface, and viva/report material.
 
