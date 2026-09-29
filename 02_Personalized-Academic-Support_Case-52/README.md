@@ -1,5 +1,7 @@
 # Personalized Academic Support — Case 52
 
+Project title (proposed title): EarlyNudge: Mid-Semester Academic Support Triage from Grade and Engagement Signals.
+
 This project implements the assigned end-to-end machine-learning case study: problem definition, documented dataset, EDA, preprocessing, a baseline and two model approaches, evaluation and error analysis, a working Streamlit interface, and viva/report material.
 
 ## Deliverables map
@@ -8,12 +10,12 @@ This project implements the assigned end-to-end machine-learning case study: pro
 | --- | --- |
 | Problem definition | `docs/PROJECT_REPORT.md`, section 1 |
 | Dataset and documentation | `data/student-por.csv`, `data/student.txt`, `data/README.md` |
-| EDA and visualisations | `src/eda.py`, `outputs/eda_summary.md`, three SVG charts |
+| EDA and visualisations | `src/eda.py`, `outputs/eda_summary.md` (including a data-quality section), five SVG charts including `outputs/priority_by_school.svg` and `outputs/priority_by_failures.svg` |
 | Preprocessing | `src/modeling.py` and report section 4 |
-| Two modelling approaches | Logistic regression and depth-limited decision tree, plus majority baseline |
-| Evaluation and error analysis | `outputs/model_comparison.json`, `outputs/holdout_error_analysis.csv` |
-| Streamlit application | `app.py` |
-| Final report and presentation | `docs/PROJECT_REPORT.md`, `docs/VIVA_AND_PRESENTATION.md` |
+| Two modelling approaches | Logistic regression and depth-limited decision tree, plus majority baseline, and an early-warning experiment without G1/G2 |
+| Evaluation and error analysis | `outputs/model_comparison.json` (train-vs-validation gaps and the `tree_depth_curve` overfitting check), `outputs/holdout_error_analysis.csv` |
+| Streamlit application | `app.py`, which loads the trained model from `outputs/logistic_model.joblib` |
+| Final report and presentation | `docs/PROJECT_REPORT.md`, `docs/VIVA_AND_PRESENTATION.md`, `docs/Case52_Presentation.pptx` |
 | Source code | `src/` and `app.py` |
 
 ## Run

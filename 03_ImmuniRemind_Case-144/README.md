@@ -4,10 +4,15 @@ This folder contains the Software Engineering and Project Management deliverable
 
 ## Deliverables
 
-- [SRS and priorities](01_SRS_and_Priorities.md): IEEE-830-style structure, 12 functional requirements, 8 measurable non-functional requirements, and MoSCoW priorities.
-- [Design and test specification](02_Design_and_Test_Specification.md): consistent use-case, class, sequence, activity, and state diagrams; cohesion/coupling rationale; equivalence classes, boundary-value tests, and due/catch-up decision table.
-- [Schedule and controls](03_Schedule_and_Controls.md): dependency network, forward/backward pass, critical path, float, Gantt, milestones, resource allocation, estimation assumptions, monitoring, pilot measures, variance response, and closure lessons.
-- [Risk and quality register](04_Risk_and_Quality.md): probability-impact register, exposure ranking, top-three RMMM actions, DRE and defect-density formulas with a clearly hypothetical worked example.
+- [01 SRS](01_SRS_and_Priorities.md): IEEE-830-style Software Requirements Specification, with 12 functional requirements, 8 measurable non-functional requirements, and MoSCoW priorities.
+- [02 UML package](02_Design_and_Test_Specification.md): the design specification, with use-case, class, sequence, activity, and state diagrams and a cohesion/coupling rationale.
+- [03 Project plan](03_Schedule_and_Controls.md): dependency network, forward/backward pass, critical path, float, Gantt, milestones, resources, monitoring, and variance response.
+- [04 Risk register](04_Risk_and_Quality.md): probability-impact matrix, exposure ranking, and RMMM plans for the top three risks.
+- [05 Test plan and evidence](05_Test_Plan_and_Evidence.md): IEEE 829-lite test plan, equivalence-class, boundary-value and decision-table designs, and test evidence.
+- [06 Estimation sheet](06_Estimation_Sheet.md): dose, SMS, coverage and pilot-effort estimates from the case facts.
+- [07 Closure note and lessons learned](07_Closure_and_Lessons_Learned.md): closure note and lessons learned.
+
+Deliverable map: SRS = 01; UML package = 02; Project plan = 03; Estimation sheet = 06; Test plan and evidence = 05; Risk register (with the P-I matrix, exposure ranking and RMMM) = 04; Closure note and lessons learned = 07.
 
 ## Case facts used
 
@@ -19,4 +24,4 @@ The deliverables cover requirements, design models, planning, test design, proje
 
 ## Validation status
 
-Arithmetic and requirement/diagram consistency were reviewed against the case facts. Diagram source is Mermaid text and can be rendered by a Mermaid-compatible Markdown viewer. Any DRE/defect-density figures are illustrative only; no implementation or actual test execution is claimed. See each document for assumptions and evidence limits.
+Arithmetic and requirement/diagram consistency were reviewed against the case facts. Diagram source is Mermaid text and can be rendered by a Mermaid-compatible Markdown viewer. The actual task durations, defect counts, workshop findings and pilot results are simulated for the case study; no real implementation, test execution or pilot was run. See each document for assumptions and evidence limits.
