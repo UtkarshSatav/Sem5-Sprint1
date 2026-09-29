@@ -102,24 +102,24 @@ Decision-tree depth curve (min leaf size 10, five-fold CV on the training partit
 | 9 | 0.9321 | 0.8975 |
 | 10 | 0.9321 | 0.8975 |
 
-Interpretation: the train–validation gap widens as depth grows (0.0000 at depth 1 to 0.0346 at depth 4), which is why depth 4 was kept as the limit. Beyond depth 4 the curve is flat because a minimum leaf size of 10 stops further splits. Validation balanced accuracy is in fact highest for the shallowest trees (0.9168 at depth 1), so the extra depth buys no generalisation. The unconstrained-tree risk is therefore controlled, and the shallow-tree result is a reminder that G2 alone carries most of the signal. All gaps are small (at most 0.0399), so no model shows serious overfitting.
+Interpretation: depth 4 was fixed in advance; the curve shows it is not the best on validation (depths 1–2 validate best: 0.9168 and 0.9156, against 0.8975 at depth 4) but it is not materially overfitting either (gap 0.0346, about 0.035). The gap widens from 0.0000 at depth 1 to 0.0346 at depth 4. Beyond depth 4 the curve is flat because a minimum leaf size of 10 stops further splits. Validation balanced accuracy is in fact highest for the shallowest trees (0.9168 at depth 1), so the extra depth buys no generalisation. The unconstrained-tree risk is therefore controlled, and the shallow-tree result is a reminder that G2 alone carries most of the signal. All gaps are small (at most 0.0399), so no model shows serious overfitting.
 
 ## 7. Error analysis
 
 A **false negative** misses a situation that later ended below 10/20; four occur in the logistic holdout results. This may delay a useful offer. A **false positive** invites a review for a student who later passes; thirteen occur. This can create unnecessary contact, workload, or stigma.
 
-The row-level holdout evidence is saved in `outputs/holdout_error_analysis.csv`. Before any real pilot, students and advisors must decide the relative cost of these errors and choose a threshold. ### What the false negatives have in common
+The row-level holdout evidence is saved in `outputs/holdout_error_analysis.csv`. Before any real pilot, students and advisors must decide the relative cost of these errors and choose a threshold. Calibration, subgroup error analysis, confidence intervals, and temporal validation are still required.
+
+### What the false negatives have in common
 
 - All 4 missed cases had a passing G2 (≥ 10; mean 10.5) and 0 previous failures.
 - 3 of the 4 were in study time band 1.
 - The model relies on G2. The true positives average G2 7.38 (from `logistic_error_profile`), so students who decline *after* a passing mid-year grade are the blind spot.
-- For contrast, the 13 false positives average G2 9.15: they look like struggling students who then recovered.
-
-Calibration, subgroup error analysis, confidence intervals, and temporal validation are still required.
+- For contrast, the 13 false positives average G2 9.15: they may be struggling students who then recovered.
 
 ## 8. Streamlit application
 
-The Streamlit app presents the source, target balance, model comparison, and an input form using the ten documented features. It returns an estimated review score plus situation-based resource ideas such as tutoring, study planning, catch-up material, flexible access, or campus internet access. The recommendations are explicit rules and are not generated from hidden model logic.
+The Streamlit app presents the source, target balance, model comparison, and an input form using the ten documented features. It returns an estimated review score plus situation-based resource ideas such as tutoring, study planning, catch-up material, flexible access, or campus internet access. The recommendations are explicit rules and are not generated from hidden model logic. The app loads the saved, evaluated logistic-regression pipeline (`outputs/logistic_model.joblib`, trained on the 75% partition) rather than retraining it.
 
 ## 9. Limitations, bias, and safeguards
 

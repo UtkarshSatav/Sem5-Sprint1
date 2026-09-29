@@ -45,7 +45,7 @@ The Streamlit app shows an estimated review score and transparent support choice
 
 **What did the early-warning experiment show?** Without G1 and G2 the logistic model has holdout balanced accuracy 0.6439, recall 0.44 and ROC AUC 0.6907, against 0.8729, 0.84 and 0.9391 with them. It beats the baseline but misses more than half the priority cases, so an enrolment-time tool would need better signals than these.
 
-**How did you check overfitting?** I compared training and validation balanced accuracy inside five-fold CV: gaps are 0.0346 for the tree and 0.0399 for logistic regression. I also plotted a depth 1 to 10 curve for the tree: the gap grows to 0.0346 by depth 4 and then plateaus because of the minimum leaf size. The untouched holdout gives a second check.
+**How did you check overfitting?** I compared training and validation balanced accuracy inside five-fold CV: gaps are 0.0346 for the tree and 0.0399 for logistic regression. I also plotted a depth 1 to 10 curve for the tree: depth 4 was fixed in advance; the curve shows it is not the best on validation (depths 1–2 validate best: 0.9168 and 0.9156, against 0.8975) but it is not materially overfitting either (gap 0.0346, about 0.035). Beyond depth 4 the curve plateaus because of the minimum leaf size. The untouched holdout gives a second check.
 
 **What data-quality issues did you find?** 15 rows with G3 = 0 (likely dropouts, so noisy labels), right-skewed absences (skew 2.02, max 32), collinear G1/G2 (r = 0.865), ordinal study-time and travel-time bands, a failures field whose documentation says "n if 1<=n<3, else 4" while the maximum is 3, and a school gap in priority rate (GP 7.6% vs MS 30.1%).
 
