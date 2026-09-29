@@ -43,7 +43,7 @@ git checkout sprint1-submission
 - **Deliverables:** a Figma design with a guided four-step prototype, the working web app, an automated test suite, and app-flow and data-model documentation.
 - **Live demo:** https://campusshuttle-1be8c.web.app
 
-### Case #52 — Personalized Academic Support
+### Case #52 — PASS (Personalized Academic Support)
 **Subject:** Machine Learning Fundamentals
 **Folder:** `02_Personalized-Academic-Support_Case-52/`
 
